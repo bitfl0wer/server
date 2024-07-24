@@ -2,7 +2,6 @@
 db/
 dist/
 node_modules
-database.db
 tsconfig.tsbuildinfo
 files/
 assets/cache
