@@ -578,7 +578,7 @@ export const DiscordApiErrors = {
 	UNKNOWN_TOKEN: new ApiError("Unknown token", 10012),
 	UNKNOWN_USER: new ApiError("Unknown user", 10013),
 	UNKNOWN_EMOJI: new ApiError("Unknown emoji", 10014),
-	UNKNOWN_WEBHOOK: new ApiError("Unknown webhook", 10015),
+	UNKNOWN_WEBHOOK: new ApiError("Unknown webhook", 10015, 404),
 	UNKNOWN_WEBHOOK_SERVICE: new ApiError("Unknown webhook service", 10016),
 	UNKNOWN_CONNECTION: new ApiError("Unknown connection", 10017, 400),
 	UNKNOWN_SESSION: new ApiError("Unknown session", 10020),
@@ -812,7 +812,7 @@ export const DiscordApiErrors = {
 		"Cannot execute action on a DM channel",
 		50003,
 	),
-	EMBED_DISABLED: new ApiError("Guild widget disabled", 50004),
+	EMBED_DISABLED: new ApiError("Widget Disabled", 50004),
 	CANNOT_EDIT_MESSAGE_BY_OTHER: new ApiError(
 		"Cannot edit a message authored by another user",
 		50005,
