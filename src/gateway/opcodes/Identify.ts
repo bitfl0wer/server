@@ -1,17 +1,17 @@
 /*
 	Spacebar: A FOSS re-implementation and extension of the Discord.com backend.
 	Copyright (C) 2023 Spacebar and Spacebar Contributors
-	
+
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU Affero General Public License as published
 	by the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
-	
+
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU Affero General Public License for more details.
-	
+
 	You should have received a copy of the GNU Affero General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
@@ -82,6 +82,7 @@ export async function onIdentify(this: WebSocket, data: Payload) {
 	const identify: IdentifySchema = data.d;
 
 	this.capabilities = new Capabilities(identify.capabilities || 0);
+	this.large_threshold = identify.large_threshold || 250;
 
 	const user = await tryGetUserFromToken(identify.token, {
 		relations: ["relationships", "relationships.to", "settings"],
@@ -122,10 +123,11 @@ export async function onIdentify(this: WebSocket, data: Payload) {
 		session_id: this.session_id,
 		status: identify.presence?.status || "online",
 		client_info: {
-			client: identify.properties?.$device,
-			os: identify.properties?.os,
+			client: identify.properties?.device || identify.properties?.$device,
+			os: identify.properties?.os || identify.properties?.$os,
 			version: 0,
 		},
+		client_status: {},
 		activities: identify.presence?.activities, // TODO: validation
 	});
 
@@ -372,7 +374,7 @@ export async function onIdentify(this: WebSocket, data: Payload) {
 			data: {
 				user: user.toPublicUser(),
 				activities: session.activities,
-				client_status: session.client_info,
+				client_status: session.client_status,
 				status: session.status,
 			},
 		} as PresenceUpdateEvent),
