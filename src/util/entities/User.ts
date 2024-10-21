@@ -1,17 +1,17 @@
 /*
 	Spacebar: A FOSS re-implementation and extension of the Discord.com backend.
 	Copyright (C) 2023 Spacebar and Spacebar Contributors
-	
+
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU Affero General Public License as published
 	by the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
-	
+
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU Affero General Public License for more details.
-	
+
 	You should have received a copy of the GNU Affero General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
@@ -34,6 +34,7 @@ import { Relationship } from "./Relationship";
 import { SecurityKey } from "./SecurityKey";
 import { Session } from "./Session";
 import { UserSettings } from "./UserSettings";
+import { dbEngine } from "../util/Database";
 
 export enum PublicUserEnum {
 	username,
@@ -86,7 +87,10 @@ export interface UserPrivate extends Pick<User, PrivateUserKeys> {
 	locale: string;
 }
 
-@Entity("users")
+@Entity({
+	name: "users",
+	engine: dbEngine,
+})
 export class User extends BaseClass {
 	@Column()
 	username: string; // username max length 32, min 2 (should be configurable)
@@ -130,7 +134,7 @@ export class User extends BaseClass {
 	bot: boolean = false; // if user is bot
 
 	@Column()
-	bio: string = ""; // short description of the user (max 190 chars -> should be configurable)
+	bio: string = ""; // short description of the user
 
 	@Column()
 	system: boolean = false; // shouldn't be used, the api sends this field type true, if the generated message comes from a system generated author

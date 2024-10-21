@@ -1,17 +1,17 @@
 /*
 	Spacebar: A FOSS re-implementation and extension of the Discord.com backend.
 	Copyright (C) 2023 Spacebar and Spacebar Contributors
-	
+
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU Affero General Public License as published
 	by the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
-	
+
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU Affero General Public License for more details.
-	
+
 	You should have received a copy of the GNU Affero General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
@@ -68,7 +68,6 @@ async function getMembers(guild_id: string, range: [number, number]) {
 	if (!Array.isArray(range) || range.length !== 2) {
 		throw new Error("range is not a valid array");
 	}
-	// TODO: wait for typeorm to implement ordering for .find queries https://github.com/typeorm/typeorm/issues/2620
 
 	let members: Member[] = [];
 	try {
@@ -82,11 +81,11 @@ async function getMembers(guild_id: string, range: [number, number]) {
 				.leftJoinAndSelect("user.sessions", "session")
 				.addSelect("user.settings")
 				.addSelect(
-					"CASE WHEN session.status = 'offline' THEN 0 ELSE 1 END",
+					"CASE WHEN session.status IS NULL OR session.status = 'offline' OR session.status = 'invisible' THEN 0 ELSE 1 END",
 					"_status",
 				)
-				.orderBy("role.position", "DESC")
-				.addOrderBy("_status", "DESC")
+				.orderBy("_status", "DESC")
+				.addOrderBy("role.position", "DESC")
 				.addOrderBy("user.username", "ASC")
 				.offset(Number(range[0]) || 0)
 				.limit(Number(range[1]) || 100)
@@ -248,7 +247,7 @@ export async function onLazyRequest(this: WebSocket, { d }: Payload) {
 					d: {
 						user: user,
 						activities: session?.activities || [],
-						client_status: session?.client_info,
+						client_status: session?.client_status,
 						status: session?.status || "offline",
 					} as Presence,
 				});
